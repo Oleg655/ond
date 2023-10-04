@@ -1,0 +1,77 @@
+button {
+  cursor: pointer;
+}
+
+.table-wrapper {
+  /* overflow: hidden; */
+  padding: 10px;
+  background: #fff;
+  border-radius: 6px;
+}
+
+table {
+  display: grid;
+  width: 100%;
+}
+
+table thead,
+table tbody,
+table tr {
+  display: contents;
+}
+
+table td {
+  position: relative;
+  display: flex;
+  min-width: 100px;
+  height: 100%;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-top: 1px solid #ccc;
+  font-size: 18px;
+  user-select: none;
+}
+
+.right-pivot {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  display: block;
+  width: 2px;
+  height: 100%;
+  border-right: 2px solid transparent;
+  cursor: col-resize;
+}
+
+.left-pivot {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 2px;
+  height: 100%;
+  border-right: 2px solid transparent;
+  cursor: col-resize;
+}
+
+.left-pivot.active {
+  border-left: 2px solid #293f53;
+}
+
+.right-pivot.active {
+  border-right: 2px dashed #293f53;
+  cursor: col-resize;
+}
+
+.pivot-highlighter:hover {
+  height: 100%;
+  box-shadow: -2px 0 0 0 #293f53 inset;
+}
+
+.menu-container {
+  position: relative;
+  justify-content: space-between;
+}

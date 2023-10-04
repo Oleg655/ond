@@ -1,13 +1,14 @@
 import React from 'react';
 
 import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
 
 import { App } from './App';
+import './index.css';
 
-ReactDOM.render(
-    <BrowserRouter>
-        <App />
-    </BrowserRouter>,
-    document.querySelector('#root'),
-);
+// spy((event: SpyEvent) => {
+//   if (event.type.includes('action')) {
+//     console.log(event);
+//   }
+// });
+
+ReactDOM.render(<App />, document.querySelector('#root'));

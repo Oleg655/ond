@@ -1,15 +1,7 @@
 import React from 'react';
 
-import { Route, Routes } from 'react-router-dom';
-
-import About from './About';
-import Home from './Home';
+import { CompoundTable } from 'components/compound-table/CompoundTable';
 
 export const App = () => {
-    return (
-        <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="about" element={<About />} />
-        </Routes>
-    );
+  return <CompoundTable />;
 };

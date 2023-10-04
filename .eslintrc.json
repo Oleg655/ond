@@ -1,76 +1,81 @@
 {
-    "env": {
-        "browser": true,
-        "es2021": true
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": [
+    "react-app",
+    "airbnb",
+    "airbnb-typescript",
+    "plugin:import/typescript",
+    "plugin:prettier/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "overrides": [],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
     },
-    "extends": [
-        "react-app",
-        "react-app/jest",
-        "airbnb",
-        "airbnb-typescript",
-        "plugin:import/typescript",
-        "plugin:prettier/recommended"
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "project": "./tsconfig.json"
+  },
+  "plugins": ["react", "@typescript-eslint", "prettier"],
+  "rules": {
+    "import/no-extraneous-dependencies": [
+      "off",
+      { "devDependencies": false, "optionalDependencies": false, "peerDependencies": false }
     ],
-    "parser": "@typescript-eslint/parser",
-    "overrides": [],
-    "parserOptions": {
-        "ecmaFeatures": {
-            "jsx": true
+    "no-restricted-syntax": ["off"],
+    "prefer-template": "off",
+    "import/prefer-default-export": ["off"],
+    "no-underscore-dangle": ["off"],
+    "import/no-cycle": ["warn"],
+    "no-debugger": ["warn"],
+    "no-unused-expressions": ["warn"],
+    "@typescript-eslint/no-unused-expressions": ["warn"],
+    "@typescript-eslint/default-param-last": ["off"],
+    "@typescript-eslint/dot-notation": ["off"],
+    "default-param-last": ["off"],
+    "no-useless-return": ["off"],
+    "no-param-reassign": ["off"],
+    "consistent-return": ["off"],
+    "dot-notation": ["off"],
+    "react/jsx-props-no-spreading": ["off"],
+    "react/require-default-props": ["off"],
+    "react/jsx-uses-react": ["off"],
+    "react-hooks/rules-of-hooks": ["warn"],
+    "react/button-has-type": ["off"],
+    "jsx-a11y/no-static-element-interactions": ["off"],
+    "jsx-a11y/no-noninteractive-element-interactions": ["off"],
+    "jsx-a11y/no-autofocus": ["off"],
+    "jsx-a11y/click-events-have-key-events": ["off"],
+    "jsx-a11y/mouse-events-have-key-events": ["off"],
+    "import/order": [
+      "error",
+      {
+        "newlines-between": "always",
+        "pathGroupsExcludedImportTypes": ["react"],
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
         },
-        "ecmaVersion": "latest",
-        "sourceType": "module",
-        "project": "./tsconfig.json"
-    },
-    "plugins": ["react", "@typescript-eslint", "prettier"],
-    "rules": {
-        "import/no-extraneous-dependencies": [
-            "off",
-            { "devDependencies": false, "optionalDependencies": false, "peerDependencies": false }
-        ],
-        "no-restricted-syntax": ["off"],
-        "prefer-template": "off",
-        "import/prefer-default-export": ["off"],
-        "no-underscore-dangle": ["off"],
-        "import/no-cycle": ["off"],
-        "no-debugger": ["warn"],
-        "react/jsx-props-no-spreading": ["off"],
-        "no-unused-expressions": ["off"],
-        "@typescript-eslint/no-unused-expressions": ["off"],
-        "react/require-default-props": ["off"],
-        "default-param-last": ["off"],
-        "@typescript-eslint/default-param-last": ["off"],
-        "no-useless-return": ["off"],
-        "no-param-reassign": ["off"],
-        "consistent-return": ["off"],
-        "dot-notation": ["off"],
-        "@typescript-eslint/dot-notation": ["off"],
-        "react/jsx-uses-react": ["off"],
-        "react/react-in-jsx-scope": ["off"],
-        "import/order": [
-            "error",
-            {
-                "newlines-between": "always",
-                "pathGroupsExcludedImportTypes": ["react"],
-                "alphabetize": {
-                    "order": "asc",
-                    "caseInsensitive": true
-                },
-                "groups": ["builtin", "external", "parent", "sibling", "index"],
-                "pathGroups": [
-                    {
-                        "pattern": "react",
-                        "group": "external",
-                        "position": "before"
-                    }
-                ]
-            }
-        ],
-        "react/function-component-definition": [
-            2,
-            {
-                "namedComponents": "arrow-function",
-                "unnamedComponents": "arrow-function"
-            }
+        "groups": ["builtin", "external", "parent", "sibling", "index"],
+        "pathGroups": [
+          {
+            "pattern": "react",
+            "group": "external",
+            "position": "before"
+          }
         ]
-    }
+      }
+    ],
+    "react/function-component-definition": [
+      2,
+      {
+        "namedComponents": "arrow-function",
+        "unnamedComponents": "arrow-function"
+      }
+    ]
+  }
 }
