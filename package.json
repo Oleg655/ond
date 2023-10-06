@@ -14,7 +14,7 @@
     "prepare": "husky install",
     "lint:css": "stylelint ./src",
     "lint:css:fix": "stylelint ./src --fix",
-    "predeploy": "npm run build",
+    "predeploy": "npm run build:prod",
     "deploy": "gh-pages -d build"
   },
   "keywords": [],

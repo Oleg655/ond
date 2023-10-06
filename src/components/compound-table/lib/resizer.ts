@@ -1,3 +1,4 @@
+/* eslint-disable no-return-assign */
 import { RefObject } from 'react';
 
 import { ColumnI } from './types';
@@ -12,12 +13,27 @@ export const resizer = (
   const fractions = createdColumns.map((column: ColumnI, index) => {
     if (index === activeIndex) {
       const width = event.clientX - column.ref.current.offsetLeft;
-      // console.log(event.clientX, column.ref.current.offsetLeft);
       if (width >= minCellWidth) {
         return `${width}px`;
       }
     }
     return `${column.ref.current.offsetWidth}px`;
+  });
+  tableElement.current.style.gridTemplateColumns = `${fractions.join(' ')}`;
+};
+
+export const hide = (
+  currentIndex: number,
+  tableElement: RefObject<HTMLTableElement>,
+  createdColumns: ColumnI[],
+  // minCellWidth: number,
+) => {
+  const fractions = createdColumns.filter((column: ColumnI, index) => {
+    if (index === currentIndex) {
+      return ``;
+    }
+
+    return `1fr`;
   });
   tableElement.current.style.gridTemplateColumns = `${fractions.join(' ')}`;
 };
@@ -30,14 +46,17 @@ export const collapseColumn = (
 ) => {
   const fractions = createdColumns.map((column: ColumnI, index) => {
     if (index !== currentIndex && column.ref.current.offsetWidth === minCellWidth) {
-      return `${minCellWidth}px`;
+      column.ref.current.style.display = 'none';
+      return ``;
     }
     if (index === currentIndex) {
-      return `${minCellWidth}px`;
+      column.ref.current.style.display = 'none';
+      return ``;
     }
 
     return `1fr`;
   });
+  console.log(tableElement.current.children);
   tableElement.current.style.gridTemplateColumns = `${fractions.join(' ')}`;
 };
 

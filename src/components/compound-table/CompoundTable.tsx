@@ -1,3 +1,4 @@
+/* eslint-disable no-else-return */
 import React, {
   createContext,
   useCallback,
@@ -9,13 +10,15 @@ import React, {
 } from 'react';
 
 import './compound-table.css';
-import { DropdownContainer } from 'components/dropdown/Dropdown';
+import { DropdownCheckboxContainer, DropdownContainer } from 'components/dropdown/Dropdown';
 import { EditableSpan } from 'components/editable-span/EditableSpan';
+import { Pagination } from 'components/pagination/Pagination';
 
 import { generateColumnsSize } from './lib';
 import { createSmartHeaders } from './lib/createSmartHeaders';
 import { collapseColumn, resizer, showColumn } from './lib/resizer';
 import { ChildrenI, ColumnI, PivotPropsI, TablePropsI } from './lib/types';
+import { data } from './test-data';
 
 const TableContent = createContext(null);
 
@@ -25,7 +28,7 @@ const Table = ({ children, minCellWidth, headers }: TablePropsI) => {
   const [activeIndex, setActiveIndex] = useState(null);
   const tableElement = useRef<HTMLTableElement>(null);
   const smartHeaders = createSmartHeaders(headers);
-
+  console.log(smartHeaders);
   const collapseWrapper = (index: number) => {
     collapseColumn(index, tableElement, smartHeaders, minCellWidth);
   };
@@ -79,16 +82,14 @@ const Table = ({ children, minCellWidth, headers }: TablePropsI) => {
 
   return (
     <TableContent.Provider value={state}>
-      <div className="table-wrapper">
-        <table
-          ref={tableElement}
-          style={{
-            gridTemplateColumns: generateColumnsSize(headers.length),
-          }}
-        >
-          {children}
-        </table>
-      </div>
+      <table
+        ref={tableElement}
+        style={{
+          gridTemplateColumns: generateColumnsSize(headers.length),
+        }}
+      >
+        {children}
+      </table>
     </TableContent.Provider>
   );
 };
@@ -173,14 +174,16 @@ Table.TableRow = ({ children }: ChildrenI) => {
 };
 
 Table.TableData = ({
+  id,
   title,
   children,
 }: {
+  id?: number;
   title?: string | number;
   children?: JSX.Element | JSX.Element[];
 }) => {
   return (
-    <td>
+    <td key={id}>
       {!children && <EditableSpan title={title} />}
       {children && (
         <>
@@ -192,70 +195,112 @@ Table.TableData = ({
 };
 
 Table.TableDataWithDeleteButton = ({
+  id,
   title,
   callback,
 }: {
+  id?: number;
   title?: string | number;
   callback: () => void;
 }) => {
   return (
-    <td>
+    <td key={id}>
       <EditableSpan title={title} /> <button onClick={callback}>delete</button>
     </td>
   );
 };
 
-export const CompoundTable = () => {
-  const [users, setUsers] = useState<any[]>([
-    {
-      id: 1,
-      title: 'Large Detroit Style Pizza',
-      order: 3213456785,
-      amount: '$31.43',
-      status: 'Pending',
-      name: 'Dave',
-    },
-    {
-      id: 2,
-      title: 'Double Decker Club With Fries. Pickles, extra side avacado',
-      order: 9874563245,
-      amount: '$12.99',
-      status: 'Delivered',
-      name: 'Cathy',
-    },
-    {
-      id: 3,
-      title: 'Family Sized Lobster Dinner',
-      order: 3456781234,
-      amount: '$320.00',
-      status: 'In Progress',
-      name: 'Alexander',
-    },
-  ]);
+Table.MainHead = ({
+  headers,
+  filterColumn,
+}: {
+  headers: string[];
+  filterColumn: (index: number, checkbox: boolean) => void;
+}) => {
+  return (
+    <DropdownCheckboxContainer>
+      <DropdownContainer.List>
+        {headers.map((element, index) => {
+          return (
+            <DropdownCheckboxContainer.CheckboxItem
+              callback={checkbox => {
+                filterColumn(index, checkbox);
+              }}
+              title={element}
+              key={element}
+            />
+          );
+        })}
+      </DropdownContainer.List>
+    </DropdownCheckboxContainer>
+  );
+};
 
+export const CompoundTable = () => {
+  const headers = ['Items', 'Order #', 'Amount', 'Status', 'Delivery Driver'];
+
+  const [users, setUsers] = useState<any[]>(data);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filteredHeaders, setFilteredHeaders] = useState<string[]>(headers);
   const addTableRow = () => {
     setUsers([{ id: Math.random() }, ...users]);
   };
 
+  const indexOfLastItem = currentPage * 3;
+  const indexOfFirstItem = indexOfLastItem - 3;
+  const currentItems = users.slice(indexOfFirstItem, indexOfLastItem);
+
+  const filterColumn = (currentIndex: number, checkbox: boolean) => {
+    setFilteredHeaders(
+      filteredHeaders.map((element, index) => {
+        if (currentIndex === index && checkbox) {
+          return;
+        }
+        if (currentIndex === index && !checkbox) {
+          return element;
+        }
+        return element;
+      }),
+    );
+  };
+  console.log(filteredHeaders);
   return (
-    <Table minCellWidth={120} headers={['Items', 'Order #', 'Amount', 'Status', 'Delivery Driver']}>
-      <Table.TableHead addTableRow={addTableRow} />
-      <Table.TableBody>
-        {users.map(user => (
-          <Table.TableRow key={Math.random()}>
-            <Table.TableDataWithDeleteButton
-              title={user.title}
-              callback={() => {
-                setUsers(users.filter(element => element.id !== user.id));
-              }}
-            />
-            <Table.TableData title={user.order} />
-            <Table.TableData title={user.amount} />
-            <Table.TableData title={user.status} />
-            <Table.TableData title={user.name} />
-          </Table.TableRow>
-        ))}
-      </Table.TableBody>
-    </Table>
+    <>
+      <div className="table-wrapper">
+        <Table.MainHead
+          filterColumn={filterColumn}
+          headers={['Items', 'Order #', 'Amount', 'Status', 'Delivery Driver']}
+        />
+        <Table minCellWidth={120} headers={filteredHeaders}>
+          <Table.TableHead addTableRow={addTableRow} />
+          <Table.TableBody>
+            {currentItems.map(user => (
+              <Table.TableRow key={Math.random()}>
+                {filteredHeaders[0] ? (
+                  <Table.TableDataWithDeleteButton
+                    title={user.title}
+                    callback={() => {
+                      setUsers(users.filter(element => element.id !== user.id));
+                    }}
+                  />
+                ) : null}
+
+                <Table.TableData title={user.order} />
+                <Table.TableData title={user.amount} />
+                <Table.TableData title={user.status} />
+                <Table.TableData title={user.name} />
+              </Table.TableRow>
+            ))}
+          </Table.TableBody>
+        </Table>
+      </div>
+      <Pagination
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        contentPerPage={3}
+        totalElements={12}
+        pageNumberLimit={10}
+      />
+    </>
   );
 };

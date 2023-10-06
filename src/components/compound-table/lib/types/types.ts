@@ -8,6 +8,7 @@ export interface PivotPropsI {
   location: number;
 }
 export interface ColumnI {
+  id?: number;
   title: string;
   ref: RefObject<HTMLTableCellElement>;
 }
