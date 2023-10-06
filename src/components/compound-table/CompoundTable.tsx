@@ -22,12 +22,12 @@ import { data } from './test-data';
 
 const TableContent = createContext(null);
 
-const Table = ({ children, minCellWidth, headers }: TablePropsI) => {
+const Table = ({ children, minCellWidth, headers, smartHeaders }: TablePropsI) => {
   const [pivotHeight, setPivotHeight] = useState<number>();
   const [showPivot, setShowPivot] = useState('pivot-highlighter');
   const [activeIndex, setActiveIndex] = useState(null);
   const tableElement = useRef<HTMLTableElement>(null);
-  const smartHeaders = createSmartHeaders(headers);
+  // const smartHeaders = createSmartHeaders(headers);
   console.log(smartHeaders);
   const collapseWrapper = (index: number) => {
     collapseColumn(index, tableElement, smartHeaders, minCellWidth);
@@ -249,6 +249,7 @@ export const CompoundTable = () => {
   const indexOfLastItem = currentPage * 3;
   const indexOfFirstItem = indexOfLastItem - 3;
   const currentItems = users.slice(indexOfFirstItem, indexOfLastItem);
+  const smartHeaders = createSmartHeaders(headers);
 
   const filterColumn = (currentIndex: number, checkbox: boolean) => {
     setFilteredHeaders(
@@ -271,7 +272,7 @@ export const CompoundTable = () => {
           filterColumn={filterColumn}
           headers={['Items', 'Order #', 'Amount', 'Status', 'Delivery Driver']}
         />
-        <Table minCellWidth={120} headers={filteredHeaders}>
+        <Table minCellWidth={120} headers={filteredHeaders} smartHeaders={smartHeaders}>
           <Table.TableHead addTableRow={addTableRow} />
           <Table.TableBody>
             {currentItems.map(user => (

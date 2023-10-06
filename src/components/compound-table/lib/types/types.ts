@@ -16,6 +16,7 @@ export interface TablePropsI {
   children: ReactChildrenT;
   headers: string[];
   minCellWidth: number;
+  smartHeaders: ColumnI[];
 }
 export interface ChildrenI {
   children: ReactChildrenT;
