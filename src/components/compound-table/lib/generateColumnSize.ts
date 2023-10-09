@@ -1,8 +1,12 @@
-export const generateColumnsSize = (tableCount: number) => {
-  let fractions = '';
-  for (let index = 0; index < tableCount; index += 1) {
-    fractions += '1fr ';
-  }
+import { ColumnI } from './types';
 
-  return fractions;
+export const generateColumnsSize = (smartHeaders: ColumnI[]) => {
+  const fractions = smartHeaders.map(element => {
+    if (element.isShown) {
+      return '1fr ';
+    }
+    return '';
+  });
+
+  return fractions.join(' ');
 };

@@ -11,10 +11,11 @@ export interface ColumnI {
   id?: number;
   title: string;
   ref: RefObject<HTMLTableCellElement>;
+  isShown: boolean;
 }
 export interface TablePropsI {
   children: ReactChildrenT;
-  headers: string[];
+  // headers: string[];
   minCellWidth: number;
   smartHeaders: ColumnI[];
 }

@@ -22,13 +22,12 @@ import { data } from './test-data';
 
 const TableContent = createContext(null);
 
-const Table = ({ children, minCellWidth, headers, smartHeaders }: TablePropsI) => {
+const Table = ({ children, minCellWidth, smartHeaders }: TablePropsI) => {
   const [pivotHeight, setPivotHeight] = useState<number>();
   const [showPivot, setShowPivot] = useState('pivot-highlighter');
   const [activeIndex, setActiveIndex] = useState(null);
   const tableElement = useRef<HTMLTableElement>(null);
-  // const smartHeaders = createSmartHeaders(headers);
-  console.log(smartHeaders);
+
   const collapseWrapper = (index: number) => {
     collapseColumn(index, tableElement, smartHeaders, minCellWidth);
   };
@@ -50,7 +49,7 @@ const Table = ({ children, minCellWidth, headers, smartHeaders }: TablePropsI) =
   const mouseUp = useCallback(() => {
     setShowPivot('pivot-highlighter');
     setActiveIndex(null);
-    setPivotHeight(tableElement.current.clientHeight / headers.length);
+    setPivotHeight(tableElement.current.clientHeight / smartHeaders.length);
     removeListeners();
   }, [removeListeners]);
 
@@ -85,7 +84,7 @@ const Table = ({ children, minCellWidth, headers, smartHeaders }: TablePropsI) =
       <table
         ref={tableElement}
         style={{
-          gridTemplateColumns: generateColumnsSize(headers.length),
+          gridTemplateColumns: generateColumnsSize(smartHeaders),
         }}
       >
         {children}
@@ -121,42 +120,23 @@ Table.Pivot = ({ side, location }: PivotPropsI) => {
   );
 };
 
-Table.TableHead = ({ addTableRow }: { addTableRow: () => void }) => {
-  const { showPivot, collapseWrapper, showWrapper, smartHeaders } = useContext(TableContent);
+Table.TableHead = () => {
+  const { showPivot, smartHeaders } = useContext(TableContent);
 
   return (
     <thead>
       <tr>
-        {smartHeaders.map(({ title, ref }: ColumnI, index: number) => {
+        {smartHeaders.map(({ id, title, ref, isShown }: ColumnI) => {
           return (
-            <td className={`menu-container ${showPivot}`} ref={ref} key={Math.random()}>
+            <td
+              style={{ display: !isShown && 'none' }}
+              className={`menu-container ${showPivot}`}
+              ref={ref}
+              key={Math.random()}
+            >
               <span>{title}</span>
-              <DropdownContainer>
-                <DropdownContainer.List>
-                  <DropdownContainer.Item
-                    callback={() => {
-                      collapseWrapper(index);
-                    }}
-                    title={`Свернуть ${title}`}
-                  />
-                  <DropdownContainer.Item
-                    callback={() => {
-                      showWrapper(index);
-                    }}
-                    title={`Развернуть ${title}`}
-                  />
-                  <DropdownContainer.Item title="Сортировать по возрастанию" />
-                  <DropdownContainer.Item
-                    callback={() => {
-                      addTableRow();
-                    }}
-                    title="Добавить строку"
-                  />
-                  <DropdownContainer.Item title="Сортировать по убыванию" />
-                </DropdownContainer.List>
-              </DropdownContainer>
-              <Table.Pivot side="LEFT" location={index} />
-              <Table.Pivot side="RIGHT" location={index} />
+              <Table.Pivot side="LEFT" location={id} />
+              <Table.Pivot side="RIGHT" location={id} />
             </td>
           );
         })}
@@ -211,23 +191,22 @@ Table.TableDataWithDeleteButton = ({
 };
 
 Table.MainHead = ({
-  headers,
-  filterColumn,
+  smartHeaders,
+  setSmartHeaders,
 }: {
-  headers: string[];
-  filterColumn: (index: number, checkbox: boolean) => void;
+  smartHeaders: ColumnI[];
+  setSmartHeaders: (id: number, isShown: boolean) => void;
 }) => {
   return (
     <DropdownCheckboxContainer>
       <DropdownContainer.List>
-        {headers.map((element, index) => {
+        {smartHeaders.map(element => {
           return (
             <DropdownCheckboxContainer.CheckboxItem
-              callback={checkbox => {
-                filterColumn(index, checkbox);
-              }}
-              title={element}
-              key={element}
+              checked={element.isShown}
+              callback={checkbox => setSmartHeaders(element.id, checkbox)}
+              title={element.title}
+              key={element.id}
             />
           );
         })}
@@ -238,46 +217,37 @@ Table.MainHead = ({
 
 export const CompoundTable = () => {
   const headers = ['Items', 'Order #', 'Amount', 'Status', 'Delivery Driver'];
+  const smartHeaders = createSmartHeaders(headers);
 
   const [users, setUsers] = useState<any[]>(data);
   const [currentPage, setCurrentPage] = useState(1);
-  const [filteredHeaders, setFilteredHeaders] = useState<string[]>(headers);
-  const addTableRow = () => {
-    setUsers([{ id: Math.random() }, ...users]);
-  };
+  const [smartColumn, setSmartColumn] = useState(smartHeaders);
 
   const indexOfLastItem = currentPage * 3;
   const indexOfFirstItem = indexOfLastItem - 3;
   const currentItems = users.slice(indexOfFirstItem, indexOfLastItem);
-  const smartHeaders = createSmartHeaders(headers);
 
-  const filterColumn = (currentIndex: number, checkbox: boolean) => {
-    setFilteredHeaders(
-      filteredHeaders.map((element, index) => {
-        if (currentIndex === index && checkbox) {
-          return;
-        }
-        if (currentIndex === index && !checkbox) {
-          return element;
+  const setSmartHeadersWrapper = (id: number, isShown: boolean) => {
+    setSmartColumn(
+      smartColumn.map(element => {
+        if (element.id === id) {
+          element.isShown = isShown;
         }
         return element;
       }),
     );
   };
-  console.log(filteredHeaders);
+
   return (
     <>
       <div className="table-wrapper">
-        <Table.MainHead
-          filterColumn={filterColumn}
-          headers={['Items', 'Order #', 'Amount', 'Status', 'Delivery Driver']}
-        />
-        <Table minCellWidth={120} headers={filteredHeaders} smartHeaders={smartHeaders}>
-          <Table.TableHead addTableRow={addTableRow} />
+        <Table.MainHead smartHeaders={smartColumn} setSmartHeaders={setSmartHeadersWrapper} />
+        <Table minCellWidth={120} smartHeaders={smartColumn}>
+          <Table.TableHead />
           <Table.TableBody>
             {currentItems.map(user => (
               <Table.TableRow key={Math.random()}>
-                {filteredHeaders[0] ? (
+                {smartColumn[0].isShown ? (
                   <Table.TableDataWithDeleteButton
                     title={user.title}
                     callback={() => {
@@ -286,10 +256,10 @@ export const CompoundTable = () => {
                   />
                 ) : null}
 
-                <Table.TableData title={user.order} />
-                <Table.TableData title={user.amount} />
-                <Table.TableData title={user.status} />
-                <Table.TableData title={user.name} />
+                {smartColumn[1].isShown ? <Table.TableData title={user.order} /> : null}
+                {smartColumn[2].isShown ? <Table.TableData title={user.amount} /> : null}
+                {smartColumn[3].isShown ? <Table.TableData title={user.status} /> : null}
+                {smartColumn[4].isShown ? <Table.TableData title={user.name} /> : null}
               </Table.TableRow>
             ))}
           </Table.TableBody>

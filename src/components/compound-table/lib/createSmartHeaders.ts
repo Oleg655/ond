@@ -5,5 +5,6 @@ export const createSmartHeaders = (headers: string[]) => {
     id: index,
     title: header,
     ref: useRef(),
+    isShown: true,
   }));
 };

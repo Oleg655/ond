@@ -78,25 +78,23 @@ export const DropdownCheckboxContainer = ({
   const dropdownRef = useRef(null);
 
   useEffect(() => {
-    const handleOutsideClick = () => {
-      // if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setOpen(false);
-      // }
+    const handleOutsideClick = (event: any) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpen(false);
+      }
     };
     if (isOpen) {
       document.addEventListener('click', handleOutsideClick);
     }
-
     return () => {
       document.removeEventListener('click', handleOutsideClick);
     };
-  }, []);
+  }, [isOpen]);
 
   return (
-    <div className="dropdown-container">
+    <div ref={dropdownRef} className="dropdown-container">
       <button
         className="dropdown-btn"
-        ref={dropdownRef}
         onClick={() => {
           setOpen(prev => !prev);
         }}
@@ -113,21 +111,21 @@ DropdownCheckboxContainer.List = ({ children }: { children: JSX.Element | JSX.El
 };
 
 DropdownCheckboxContainer.CheckboxItem = ({
+  checked,
   title,
   callback,
 }: {
+  checked: boolean;
   title: string;
   callback?: (checkbox: boolean) => void;
 }) => {
-  const [checkbox, setCheckbox] = useState(true);
   return (
     <label htmlFor={title}>
       <li>
         <input
-          checked={checkbox}
+          checked={checked}
           onChange={event => {
-            setCheckbox(event.target.checked);
-            callback(checkbox);
+            callback(event.target.checked);
           }}
           id={title}
           type="checkbox"

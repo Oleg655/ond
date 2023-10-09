@@ -1,4 +1,3 @@
-/* eslint-disable no-return-assign */
 import { RefObject } from 'react';
 
 import { ColumnI } from './types';
@@ -10,30 +9,15 @@ export const resizer = (
   minCellWidth: number,
   activeIndex: number,
 ) => {
-  const fractions = createdColumns.map((column: ColumnI, index) => {
-    if (index === activeIndex) {
+  const filteredCreatedColumns = createdColumns.filter(element => element.isShown === true);
+  const fractions = filteredCreatedColumns.map((column: ColumnI) => {
+    if (column.id === activeIndex) {
       const width = event.clientX - column.ref.current.offsetLeft;
       if (width >= minCellWidth) {
         return `${width}px`;
       }
     }
     return `${column.ref.current.offsetWidth}px`;
-  });
-  tableElement.current.style.gridTemplateColumns = `${fractions.join(' ')}`;
-};
-
-export const hide = (
-  currentIndex: number,
-  tableElement: RefObject<HTMLTableElement>,
-  createdColumns: ColumnI[],
-  // minCellWidth: number,
-) => {
-  const fractions = createdColumns.filter((column: ColumnI, index) => {
-    if (index === currentIndex) {
-      return ``;
-    }
-
-    return `1fr`;
   });
   tableElement.current.style.gridTemplateColumns = `${fractions.join(' ')}`;
 };
@@ -56,7 +40,6 @@ export const collapseColumn = (
 
     return `1fr`;
   });
-  console.log(tableElement.current.children);
   tableElement.current.style.gridTemplateColumns = `${fractions.join(' ')}`;
 };
 
