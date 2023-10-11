@@ -28,9 +28,14 @@ table td {
   justify-content: space-between;
   padding: 16px 20px;
   border-top: 1px solid #ccc;
+  cursor: pointer;
   font-size: 18px;
   user-select: none;
 }
+
+/* table td span {
+  cursor: move;
+} */
 
 .right-pivot {
   position: absolute;

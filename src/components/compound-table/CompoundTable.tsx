@@ -1,3 +1,6 @@
+/* eslint-disable no-continue */
+/* eslint-disable no-unreachable-loop */
+/* eslint-disable guard-for-in */
 /* eslint-disable no-else-return */
 import React, {
   createContext,
@@ -20,25 +23,25 @@ import { collapseColumn, resizer, showColumn } from './lib/resizer';
 import { ChildrenI, ColumnI, PivotPropsI, TablePropsI } from './lib/types';
 import { data } from './test-data';
 
-const TableContent = createContext(null);
+const TableContext = createContext(null);
 
-const Table = ({ children, minCellWidth, smartHeaders }: TablePropsI) => {
+const Table = ({ children, minCellWidth, smartColumn }: TablePropsI) => {
   const [pivotHeight, setPivotHeight] = useState<number>();
   const [showPivot, setShowPivot] = useState('pivot-highlighter');
   const [activeIndex, setActiveIndex] = useState(null);
   const tableElement = useRef<HTMLTableElement>(null);
 
   const collapseWrapper = (index: number) => {
-    collapseColumn(index, tableElement, smartHeaders, minCellWidth);
+    collapseColumn(index, tableElement, smartColumn, minCellWidth);
   };
 
   const showWrapper = (index: number) => {
-    showColumn(index, tableElement, smartHeaders, minCellWidth);
+    showColumn(index, tableElement, smartColumn, minCellWidth);
   };
 
   const mouseMove = useCallback(
-    (event: MouseEvent) => resizer(event, tableElement, smartHeaders, minCellWidth, activeIndex),
-    [activeIndex, smartHeaders, minCellWidth],
+    (event: MouseEvent) => resizer(event, tableElement, smartColumn, minCellWidth, activeIndex),
+    [activeIndex, smartColumn, minCellWidth],
   );
 
   const removeListeners = useCallback(() => {
@@ -49,7 +52,7 @@ const Table = ({ children, minCellWidth, smartHeaders }: TablePropsI) => {
   const mouseUp = useCallback(() => {
     setShowPivot('pivot-highlighter');
     setActiveIndex(null);
-    setPivotHeight(tableElement.current.clientHeight / smartHeaders.length);
+    setPivotHeight(tableElement.current.clientHeight / smartColumn.length);
     removeListeners();
   }, [removeListeners]);
 
@@ -66,7 +69,7 @@ const Table = ({ children, minCellWidth, smartHeaders }: TablePropsI) => {
 
   const state = useMemo(() => {
     return {
-      smartHeaders,
+      smartColumn,
       activeIndex,
       setActiveIndex,
       collapseWrapper,
@@ -77,25 +80,25 @@ const Table = ({ children, minCellWidth, smartHeaders }: TablePropsI) => {
       showPivot,
       setShowPivot,
     };
-  }, [pivotHeight, showPivot, activeIndex]);
+  }, [pivotHeight, showPivot, activeIndex, smartColumn]);
 
   return (
-    <TableContent.Provider value={state}>
+    <TableContext.Provider value={state}>
       <table
         ref={tableElement}
         style={{
-          gridTemplateColumns: generateColumnsSize(smartHeaders),
+          gridTemplateColumns: generateColumnsSize(smartColumn),
         }}
       >
         {children}
       </table>
-    </TableContent.Provider>
+    </TableContext.Provider>
   );
 };
 
 Table.Pivot = ({ side, location }: PivotPropsI) => {
   const { tableElement, pivotHeight, setPivotHeight, setShowPivot, activeIndex, setActiveIndex } =
-    useContext(TableContent);
+    useContext(TableContext);
 
   return (
     <>
@@ -120,23 +123,48 @@ Table.Pivot = ({ side, location }: PivotPropsI) => {
   );
 };
 
-Table.TableHead = () => {
-  const { showPivot, smartHeaders } = useContext(TableContent);
-
+Table.TableHead = ({
+  sorts,
+  sortTableData,
+  dragStartHandler,
+  dragEndHandler,
+  dragOverHandler,
+  dragLeaveHandler,
+  dropHandler,
+  sortColumns,
+}: any) => {
+  const { showPivot, smartColumn } = useContext(TableContext);
+  const [arrow, setArrow] = useState(null);
   return (
     <thead>
       <tr>
-        {smartHeaders.map(({ id, title, ref, isShown }: ColumnI) => {
+        {smartColumn.sort(sortColumns).map((element: ColumnI) => {
           return (
             <td
-              style={{ display: !isShown && 'none' }}
+              style={{ display: !element.isShown && 'none' }}
               className={`menu-container ${showPivot}`}
-              ref={ref}
-              key={Math.random()}
+              ref={element.ref}
+              key={element.id}
+              onClick={() => {
+                setArrow(element.id);
+                sortTableData(element.columnTitle);
+              }}
             >
-              <span>{title}</span>
-              <Table.Pivot side="LEFT" location={id} />
-              <Table.Pivot side="RIGHT" location={id} />
+              <span
+                draggable
+                onDragStart={event => dragStartHandler(event, element)}
+                onDragEnd={event => dragEndHandler(event)}
+                onDragOver={event => dragOverHandler(event)}
+                onDragLeave={event => dragLeaveHandler(event)}
+                onDrop={event => dropHandler(event, element)}
+              >
+                {element.headerTitle}
+              </span>
+              <span style={{ display: !(arrow === element.id) && 'none' }}>
+                {sorts[element.columnTitle] ? '↓' : '↑'}
+              </span>
+              <Table.Pivot side="LEFT" location={element.id} />
+              <Table.Pivot side="RIGHT" location={element.id} />
             </td>
           );
         })}
@@ -157,14 +185,21 @@ Table.TableData = ({
   id,
   title,
   children,
+  callback,
 }: {
   id?: number;
   title?: string | number;
   children?: JSX.Element | JSX.Element[];
+  callback?: () => void;
 }) => {
   return (
     <td key={id}>
-      {!children && <EditableSpan title={title} />}
+      {!children && callback && (
+        <>
+          <EditableSpan title={title} /> <button onClick={callback}>delete</button>
+        </>
+      )}
+      {!children && !callback && <EditableSpan title={title} />}
       {children && (
         <>
           <EditableSpan title={title} /> {children}
@@ -191,21 +226,23 @@ Table.TableDataWithDeleteButton = ({
 };
 
 Table.MainHead = ({
-  smartHeaders,
+  smartColumn,
   setSmartHeaders,
+  sortColumns,
 }: {
-  smartHeaders: ColumnI[];
+  smartColumn: ColumnI[];
   setSmartHeaders: (id: number, isShown: boolean) => void;
+  sortColumns: (a: ColumnI, b: ColumnI) => number;
 }) => {
   return (
     <DropdownCheckboxContainer>
       <DropdownContainer.List>
-        {smartHeaders.map(element => {
+        {smartColumn.sort(sortColumns).map((element: any) => {
           return (
             <DropdownCheckboxContainer.CheckboxItem
               checked={element.isShown}
               callback={checkbox => setSmartHeaders(element.id, checkbox)}
-              title={element.title}
+              title={element.headerTitle}
               key={element.id}
             />
           );
@@ -215,17 +252,44 @@ Table.MainHead = ({
   );
 };
 
+Table.Arrow = ({ isSorted }: { isSorted: boolean }) => {
+  return <div>{isSorted ? <span>&#8593;</span> : <span>&#8595;</span>}</div>;
+};
+
 export const CompoundTable = () => {
-  const headers = ['Items', 'Order #', 'Amount', 'Status', 'Delivery Driver'];
+  const headers = [
+    { headerTitle: 'Items', columnTitle: 'title' },
+    { headerTitle: 'Order #', columnTitle: 'order' },
+    { headerTitle: 'Amount', columnTitle: 'amount' },
+    { headerTitle: 'Status', columnTitle: 'status' },
+    { headerTitle: 'Delivery Driver', columnTitle: 'name' },
+  ];
   const smartHeaders = createSmartHeaders(headers);
+  const [smartColumn, setSmartColumn] = useState(smartHeaders);
+  const [currentSmartColumn, setCurrentSmartColumn] = useState(null);
 
   const [users, setUsers] = useState<any[]>(data);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [smartColumn, setSmartColumn] = useState(smartHeaders);
+  const [sorts, setSorts] = useState<any>({
+    title: false,
+    order: false,
+    amount: false,
+    status: false,
+    name: false,
+  });
 
-  const indexOfLastItem = currentPage * 3;
-  const indexOfFirstItem = indexOfLastItem - 3;
-  const currentItems = users.slice(indexOfFirstItem, indexOfLastItem);
+  const [currentPage, setCurrentPage] = useState(1);
+  // const [itemsPerPage, setItemsPerPage] = useState(3);
+  const [currentItems, setCurrentItems] = useState<any>([]);
+
+  const generateCurrentItems = () => {
+    const indexOfLastItem = currentPage * 3;
+    const indexOfFirstItem = indexOfLastItem - 3;
+    setCurrentItems(users.slice(indexOfFirstItem, indexOfLastItem));
+  };
+
+  useEffect(() => {
+    generateCurrentItems();
+  }, [currentPage, users]);
 
   const setSmartHeadersWrapper = (id: number, isShown: boolean) => {
     setSmartColumn(
@@ -237,34 +301,137 @@ export const CompoundTable = () => {
       }),
     );
   };
+  const dragStartHandler = (event: any, element: ColumnI): void => {
+    setCurrentSmartColumn(element);
+  };
+  const dragEndHandler = (): void => {
+    generateCurrentItems();
+  };
+  const dragOverHandler = (event: any): void => {
+    event.preventDefault();
+    event.target.style.background = 'red';
+  };
+  const dragLeaveHandler = (event: any): void => {
+    event.target.style.background = 'white';
+  };
+  const dropHandler = (event: any, column: ColumnI): void => {
+    event.target.style.background = 'white';
+    event.preventDefault();
+    setSmartColumn(
+      smartColumn.map(element => {
+        if (element.id === column.id) {
+          return { ...element, order: currentSmartColumn.order };
+        }
+        if (element.id === currentSmartColumn.id) {
+          return { ...element, order: column.order };
+        }
+        return element;
+      }),
+    );
+  };
+
+  const sortTableData = (columnTitle: string) => {
+    setSorts({ ...sorts, [columnTitle]: !sorts[columnTitle] });
+    setUsers(
+      users.sort((elementA: any, elementB: any) => {
+        if (elementA[columnTitle] > elementB[columnTitle]) {
+          return sorts[columnTitle] ? -1 : 1;
+        }
+        if (elementA[columnTitle] < elementB[columnTitle]) {
+          return sorts[columnTitle] ? 1 : -1;
+        }
+        return 0;
+      }),
+    );
+    generateCurrentItems();
+  };
+
+  const sortColumns = (a: ColumnI, b: ColumnI) => {
+    if (a.order > b.order) {
+      return 1;
+    }
+    return -1;
+  };
+
+  const addItem = () => {
+    setUsers([
+      {
+        id: Math.random(),
+        title: '',
+        order: null,
+        amount: null,
+        status: '',
+        name: '',
+      },
+      ...users,
+    ]);
+  };
+
+  const renderDataCells = useMemo(() => {
+    console.log(currentItems);
+    return currentItems.map((user: any) => {
+      return (
+        <Table.TableRow key={Math.random()}>
+          {(() => {
+            const cells: any = [];
+            let index = 0;
+            for (const key in user) {
+              if (key === 'id') {
+                continue;
+              }
+              if (key === 'title') {
+                cells.push(
+                  <React.Fragment key={smartColumn[index].id}>
+                    {smartColumn[index].isShown && (
+                      <Table.TableData
+                        callback={() => {
+                          setUsers(users.filter(element => element.id !== user.id));
+                        }}
+                        title={user[smartColumn[index].columnTitle]}
+                      />
+                    )}
+                  </React.Fragment>,
+                );
+                index += 1;
+              } else {
+                cells.push(
+                  <React.Fragment key={smartColumn[index].id}>
+                    {smartColumn[index].isShown && (
+                      <Table.TableData title={user[smartColumn[index].columnTitle]} />
+                    )}
+                  </React.Fragment>,
+                );
+                index += 1;
+              }
+            }
+            return cells;
+          })()}
+        </Table.TableRow>
+      );
+    });
+  }, [currentItems, smartColumn]);
 
   return (
-    <>
-      <div className="table-wrapper">
-        <Table.MainHead smartHeaders={smartColumn} setSmartHeaders={setSmartHeadersWrapper} />
-        <Table minCellWidth={120} smartHeaders={smartColumn}>
-          <Table.TableHead />
-          <Table.TableBody>
-            {currentItems.map(user => (
-              <Table.TableRow key={Math.random()}>
-                {smartColumn[0].isShown ? (
-                  <Table.TableDataWithDeleteButton
-                    title={user.title}
-                    callback={() => {
-                      setUsers(users.filter(element => element.id !== user.id));
-                    }}
-                  />
-                ) : null}
-
-                {smartColumn[1].isShown ? <Table.TableData title={user.order} /> : null}
-                {smartColumn[2].isShown ? <Table.TableData title={user.amount} /> : null}
-                {smartColumn[3].isShown ? <Table.TableData title={user.status} /> : null}
-                {smartColumn[4].isShown ? <Table.TableData title={user.name} /> : null}
-              </Table.TableRow>
-            ))}
-          </Table.TableBody>
-        </Table>
-      </div>
+    <div className="table-wrapper">
+      <Table.MainHead
+        sortColumns={sortColumns}
+        smartColumn={smartColumn}
+        setSmartHeaders={setSmartHeadersWrapper}
+      />
+      <button onClick={() => addItem()}>Добавить запись</button>
+      <Table minCellWidth={120} smartColumn={smartColumn}>
+        <Table.TableHead
+          sorts={sorts}
+          sortTableData={sortTableData}
+          dragStartHandler={dragStartHandler}
+          dragEndHandler={dragEndHandler}
+          dragOverHandler={dragOverHandler}
+          dragLeaveHandler={dragLeaveHandler}
+          dropHandler={dropHandler}
+          sortColumns={sortColumns}
+        />
+        <Table.TableBody>{renderDataCells}</Table.TableBody>
+      </Table>
       <Pagination
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
@@ -272,6 +439,6 @@ export const CompoundTable = () => {
         totalElements={12}
         pageNumberLimit={10}
       />
-    </>
+    </div>
   );
 };

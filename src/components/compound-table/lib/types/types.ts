@@ -9,7 +9,9 @@ export interface PivotPropsI {
 }
 export interface ColumnI {
   id?: number;
-  title: string;
+  order: number;
+  headerTitle: string;
+  columnTitle: string;
   ref: RefObject<HTMLTableCellElement>;
   isShown: boolean;
 }
@@ -17,7 +19,7 @@ export interface TablePropsI {
   children: ReactChildrenT;
   // headers: string[];
   minCellWidth: number;
-  smartHeaders: ColumnI[];
+  smartColumn: ColumnI[];
 }
 export interface ChildrenI {
   children: ReactChildrenT;

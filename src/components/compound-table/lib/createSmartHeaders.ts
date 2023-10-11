@@ -1,9 +1,11 @@
 import { useRef } from 'react';
 
-export const createSmartHeaders = (headers: string[]) => {
-  return headers.map((header, index) => ({
+export const createSmartHeaders = (headers: any[]) => {
+  return headers.map(({ headerTitle, columnTitle }, index) => ({
     id: index,
-    title: header,
+    order: index,
+    headerTitle,
+    columnTitle,
     ref: useRef(),
     isShown: true,
   }));

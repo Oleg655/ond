@@ -94,7 +94,7 @@ export const DropdownCheckboxContainer = ({
   return (
     <div ref={dropdownRef} className="dropdown-container">
       <button
-        className="dropdown-btn"
+        // className="dropdown-btn"
         onClick={() => {
           setOpen(prev => !prev);
         }}
