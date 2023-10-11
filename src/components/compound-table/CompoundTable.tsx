@@ -368,7 +368,6 @@ export const CompoundTable = () => {
   };
 
   const renderDataCells = useMemo(() => {
-    console.log(currentItems);
     return currentItems.map((user: any) => {
       return (
         <Table.TableRow key={Math.random()}>
@@ -436,7 +435,7 @@ export const CompoundTable = () => {
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
         contentPerPage={3}
-        totalElements={12}
+        totalElements={users.length}
         pageNumberLimit={10}
       />
     </div>
