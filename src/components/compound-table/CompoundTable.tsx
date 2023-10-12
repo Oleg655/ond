@@ -1,7 +1,4 @@
 /* eslint-disable no-continue */
-/* eslint-disable no-unreachable-loop */
-/* eslint-disable guard-for-in */
-/* eslint-disable no-else-return */
 import React, {
   createContext,
   useCallback,
@@ -236,7 +233,7 @@ Table.MainHead = ({
 }) => {
   return (
     <DropdownCheckboxContainer>
-      <DropdownContainer.List>
+      <DropdownContainer.List width="200px">
         {smartColumn.sort(sortColumns).map((element: any) => {
           return (
             <DropdownCheckboxContainer.CheckboxItem
@@ -278,18 +275,18 @@ export const CompoundTable = () => {
   });
 
   const [currentPage, setCurrentPage] = useState(1);
-  // const [itemsPerPage, setItemsPerPage] = useState(3);
   const [currentItems, setCurrentItems] = useState<any>([]);
+  const [contentPerPage, setContentPerPage] = useState(3);
 
   const generateCurrentItems = () => {
-    const indexOfLastItem = currentPage * 3;
-    const indexOfFirstItem = indexOfLastItem - 3;
+    const indexOfLastItem = currentPage * contentPerPage;
+    const indexOfFirstItem = indexOfLastItem - contentPerPage;
     setCurrentItems(users.slice(indexOfFirstItem, indexOfLastItem));
   };
 
   useEffect(() => {
     generateCurrentItems();
-  }, [currentPage, users]);
+  }, [currentPage, users, contentPerPage]);
 
   const setSmartHeadersWrapper = (id: number, isShown: boolean) => {
     setSmartColumn(
@@ -434,7 +431,8 @@ export const CompoundTable = () => {
       <Pagination
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
-        contentPerPage={3}
+        contentPerPage={contentPerPage}
+        setContentPerPage={setContentPerPage}
         totalElements={users.length}
         pageNumberLimit={10}
       />

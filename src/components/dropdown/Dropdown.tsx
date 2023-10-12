@@ -2,7 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import './dropdown.css';
 
-export const DropdownContainer = ({ children }: { children: JSX.Element | JSX.Element[] }) => {
+export const DropdownContainer = ({
+  children,
+  renderContent,
+}: {
+  children: JSX.Element | JSX.Element[];
+  renderContent: () => JSX.Element | JSX.Element[];
+}) => {
   const [isOpen, setOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -12,31 +18,41 @@ export const DropdownContainer = ({ children }: { children: JSX.Element | JSX.El
         setOpen(false);
       }
     };
-
-    document.addEventListener('click', handleOutsideClick);
-
+    if (isOpen) {
+      document.addEventListener('click', handleOutsideClick);
+    }
     return () => {
       document.removeEventListener('click', handleOutsideClick);
     };
-  }, []);
+  }, [isOpen]);
   return (
     <div className="dropdown-container">
       <span
-        className="dropdown-btn"
         ref={dropdownRef}
+        className="dropdown-btn"
         onClick={() => {
-          setOpen(true);
+          setOpen(prev => !prev);
         }}
       >
-        &#8230;
+        {renderContent()}
       </span>
       {isOpen && <div>{children}</div>}
     </div>
   );
 };
 
-DropdownContainer.List = ({ children }: { children: JSX.Element | JSX.Element[] }) => {
-  return <ul className="dropdown-menu">{children}</ul>;
+DropdownContainer.List = ({
+  children,
+  width,
+}: {
+  children: JSX.Element | JSX.Element[];
+  width: string;
+}) => {
+  return (
+    <ul style={{ width }} className="dropdown-menu">
+      {children}
+    </ul>
+  );
 };
 
 DropdownContainer.Item = ({
@@ -44,7 +60,7 @@ DropdownContainer.Item = ({
   children,
   callback,
 }: {
-  title: string;
+  title: string | number;
   children?: JSX.Element | JSX.Element[];
   callback?: () => void;
 }) => {

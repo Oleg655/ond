@@ -1,13 +1,14 @@
-/* eslint-disable no-unneeded-ternary */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // import { ReactComponent as Left } from 'assets/left-indicator.svg';
 // import { ReactComponent as Right } from 'assets/right-indicator.svg';
 
 import './pagination.css';
+import { PageSize } from './PageSize';
 
 type UsePaginationPropsT = {
   contentPerPage: number;
+  setContentPerPage: (count: number) => void;
   totalElements: number;
   pageNumberLimit: number;
   currentPage: number;
@@ -16,6 +17,7 @@ type UsePaginationPropsT = {
 
 export const Pagination = ({
   contentPerPage,
+  setContentPerPage,
   totalElements,
   pageNumberLimit,
   currentPage,
@@ -25,6 +27,15 @@ export const Pagination = ({
 
   const [maxPageNumberLimit, setMaxPageNumberLimit] = useState<number>(pageNumberLimit);
   const [minPageNumberLimit, setMinPageNumberLimit] = useState<number>(1);
+
+  useEffect(() => {
+    if (currentPage < pageCount) {
+      setCurrentPage(currentPage);
+    }
+    if (currentPage > pageCount) {
+      setCurrentPage(pageCount);
+    }
+  }, [pageCount]);
 
   const nextPage = () => {
     setCurrentPage(currentPage + 1);
@@ -70,7 +81,7 @@ export const Pagination = ({
 
   const leftIArrow = (
     <button
-      disabled={currentPage === arrayFromPage[0] ? true : false}
+      disabled={currentPage === arrayFromPage[0]}
       onClick={prevPage}
       type="button"
       className={currentPage === arrayFromPage[0] ? 'btn-disabled' : 'btn'}
@@ -82,7 +93,7 @@ export const Pagination = ({
 
   const rightArrow = (
     <button
-      disabled={currentPage === arrayFromPage[arrayFromPage.length - 1] ? true : false}
+      disabled={currentPage === arrayFromPage[arrayFromPage.length - 1]}
       onClick={nextPage}
       type="button"
       className={currentPage === arrayFromPage[arrayFromPage.length - 1] ? 'btn-disabled' : 'btn'}
@@ -134,13 +145,7 @@ export const Pagination = ({
       {renderPageNumbers}
       {pageIncrementBtn}
       {rightArrow}
+      <PageSize contentPerPage={contentPerPage} setContentPerPage={setContentPerPage} />
     </div>
   );
-  // totalPages: pageCount,
-  // currentPage,
-  // renderPageNumbers,
-  // pageIncrementBtn,
-  // pageDecrementBtn,
-  // leftIArrow,
-  // rightArrow,
 };
