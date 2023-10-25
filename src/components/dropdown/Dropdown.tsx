@@ -44,12 +44,14 @@ export const DropdownContainer = ({
 DropdownContainer.List = ({
   children,
   width,
+  padding,
 }: {
   children: JSX.Element | JSX.Element[];
   width: string;
+  padding: string;
 }) => {
   return (
-    <ul style={{ width }} className="dropdown-menu">
+    <ul style={{ width, padding }} className="dropdown-menu">
       {children}
     </ul>
   );
@@ -122,8 +124,20 @@ export const DropdownCheckboxContainer = ({
   );
 };
 
-DropdownCheckboxContainer.List = ({ children }: { children: JSX.Element | JSX.Element[] }) => {
-  return <ul className="dropdown-menu">{children}</ul>;
+DropdownCheckboxContainer.List = ({
+  children,
+  width,
+  padding,
+}: {
+  children: JSX.Element | JSX.Element[];
+  width: string;
+  padding: string;
+}) => {
+  return (
+    <ul style={{ width, padding }} className="dropdown-menu">
+      {children}
+    </ul>
+  );
 };
 
 DropdownCheckboxContainer.CheckboxItem = ({

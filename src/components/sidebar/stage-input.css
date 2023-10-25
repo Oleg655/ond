@@ -1,0 +1,12 @@
+.stage-input-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+}
+
+.stage-input {
+  width: 70%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  outline: none;
+}

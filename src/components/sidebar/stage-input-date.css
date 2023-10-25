@@ -1,0 +1,12 @@
+.stage-input-date-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+}
+
+.stage-input-date {
+  padding: 5px;
+  border: 1px solid #ccc;
+  outline: none;
+}

@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { CompoundTable } from 'components/compound-table/CompoundTable';
+import { CompoundTableRender } from 'components/compound-table/CompoundTable';
 
 export const App = () => {
-  return <CompoundTable />;
+  return <CompoundTableRender />;
 };

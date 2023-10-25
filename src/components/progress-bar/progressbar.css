@@ -1,0 +1,23 @@
+.progressbar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+
+.progressbar-container span {
+  color: rgb(38 89 199);
+  font-size: 14px;
+}
+
+.progressbar {
+  display: flex;
+  overflow: hidden;
+  width: 150px;
+  height: 5px;
+  background-color: rgb(160 221 250);
+  border-radius: 60px;
+}
+
+.bar {
+  background-color: rgb(38 89 199);
+}

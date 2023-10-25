@@ -2,7 +2,7 @@ export const data = [
   {
     id: 1,
     title: 'Large Detroit Style Pizza',
-    order: 3213456785,
+    progress: 20,
     amount: 31.43,
     status: 'Pending',
     name: 'Dave',
@@ -10,7 +10,7 @@ export const data = [
   {
     id: 2,
     title: 'Double Decker Club With Fries. Pickles, extra side avacado',
-    order: 9874563245,
+    progress: 35,
     amount: 12.99,
     status: 'Delivered',
     name: 'Cathy',
@@ -18,7 +18,7 @@ export const data = [
   {
     id: 3,
     title: 'Family Sized Lobster Dinner',
-    order: 3456781234,
+    progress: 75,
     amount: 320.0,
     status: 'In Progress',
     name: 'Alexander',
@@ -26,7 +26,7 @@ export const data = [
   {
     id: 4,
     title: 'Style Pizza',
-    order: 3213456785,
+    progress: 40,
     amount: 31.43,
     status: 'Pending',
     name: 'Dave',
@@ -34,7 +34,7 @@ export const data = [
   {
     id: 5,
     title: 'Club With Fries. Pickles, extra side avacado',
-    order: 9874563245,
+    progress: 10,
     amount: 12.99,
     status: 'Delivered',
     name: 'Cathy',
@@ -42,7 +42,7 @@ export const data = [
   {
     id: 6,
     title: 'Lobster Dinner',
-    order: 3456781234,
+    progress: 25,
     amount: 320.0,
     status: 'In Progress',
     name: 'Alexander',
@@ -50,7 +50,7 @@ export const data = [
   {
     id: 7,
     title: 'Pizza pepperoni',
-    order: 3213456785,
+    progress: 30,
     amount: 31.43,
     status: 'Pending',
     name: 'Dave',
@@ -58,7 +58,7 @@ export const data = [
   {
     id: 8,
     title: 'Double Decker Club With Fries. Pickles, extra side avacado',
-    order: 9874563245,
+    progress: 60,
     amount: 12.99,
     status: 'Delivered',
     name: 'Cathy',
@@ -66,7 +66,7 @@ export const data = [
   {
     id: 9,
     title: 'Family Sized Lobster Dinner',
-    order: 3456781234,
+    progress: 15,
     amount: 320.0,
     status: 'In Progress',
     name: 'Alex',
@@ -74,7 +74,7 @@ export const data = [
   {
     id: 10,
     title: 'Large Detroit Style Pizza',
-    order: 3213456785,
+    progress: 20,
     amount: 31.43,
     status: 'Pending',
     name: 'Dave',
@@ -82,7 +82,7 @@ export const data = [
   {
     id: 11,
     title: 'Double Decker Club With Fries. Pickles, extra side avacado',
-    order: 9874563245,
+    progress: 55,
     amount: 12.99,
     status: 'Delivered',
     name: 'Dima',
@@ -90,7 +90,7 @@ export const data = [
   {
     id: 12,
     title: 'Family Sized Dinner',
-    order: 3456781234,
+    progress: 30,
     amount: 320.0,
     status: 'Stopped',
     name: 'Alex',

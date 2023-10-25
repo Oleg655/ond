@@ -1,28 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 // import { ReactComponent as Left } from 'assets/left-indicator.svg';
 // import { ReactComponent as Right } from 'assets/right-indicator.svg';
+import { TableActionsContext, TableContext } from 'components/compound-table/CompoundTable';
 
 import './pagination.css';
 import { PageSize } from './PageSize';
 
 type UsePaginationPropsT = {
-  contentPerPage: number;
-  setContentPerPage: (count: number) => void;
-  totalElements: number;
   pageNumberLimit: number;
-  currentPage: number;
-  setCurrentPage: (page: number) => void;
 };
 
-export const Pagination = ({
-  contentPerPage,
-  setContentPerPage,
-  totalElements,
-  pageNumberLimit,
-  currentPage,
-  setCurrentPage,
-}: UsePaginationPropsT) => {
+export const Pagination = ({ pageNumberLimit }: UsePaginationPropsT) => {
+  const { currentPage, contentPerPage, totalElements } = useContext(TableContext);
+  const { setCurrentPage, setContentPerPage } = useContext(TableActionsContext);
   const pageCount = Math.ceil(totalElements / contentPerPage);
 
   const [maxPageNumberLimit, setMaxPageNumberLimit] = useState<number>(pageNumberLimit);

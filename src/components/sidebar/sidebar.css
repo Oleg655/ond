@@ -1,0 +1,34 @@
+.sidebar {
+  width: 40%;
+  border-left: 1px solid #ccc;
+}
+
+.sidebar-header {
+  display: flex;
+}
+
+.active-page {
+  border-bottom: 2px solid rgb(38 89 199);
+}
+
+.sidebar-header h3 {
+  padding: 20px;
+  cursor: pointer;
+}
+
+.sidebar-header h3:hover {
+  border-bottom: 2px solid rgb(38 89 199);
+}
+
+.close-sidebar {
+  display: flex;
+  align-items: center;
+  margin-right: 50px;
+  margin-left: auto;
+  cursor: pointer;
+}
+
+.input-date-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}

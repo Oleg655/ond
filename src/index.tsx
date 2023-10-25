@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { StrictMode } from 'react';
 
 import ReactDOM from 'react-dom';
 
@@ -11,4 +11,9 @@ import './index.css';
 //   }
 // });
 
-ReactDOM.render(<App />, document.querySelector('#root'));
+ReactDOM.render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+  document.querySelector('#root'),
+);

@@ -12,7 +12,7 @@ export const PageSize = ({ contentPerPage, setContentPerPage }: PageSizePropsI) 
     <div>
       <span>Элементов: {contentPerPage}</span>
       <DropdownContainer renderContent={() => <span>&#9660;</span>}>
-        <DropdownContainer.List width="50px">
+        <DropdownContainer.List width="50px" padding="5px">
           <DropdownContainer.Item callback={() => setContentPerPage(3)} title={3} />
           <DropdownContainer.Item callback={() => setContentPerPage(4)} title={4} />
           <DropdownContainer.Item callback={() => setContentPerPage(6)} title={6} />

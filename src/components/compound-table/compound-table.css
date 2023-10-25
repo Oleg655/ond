@@ -1,9 +1,20 @@
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+.table-content {
+  overflow: hidden;
+  width: 60%;
+  overflow-x: auto;
+}
+
 button {
   cursor: pointer;
 }
 
 .table-wrapper {
-  padding: 10px;
+  /* padding: 10px; */
   background: #fff;
   border-radius: 6px;
 }
@@ -33,9 +44,17 @@ table td {
   user-select: none;
 }
 
-/* table td span {
+table tbody tr:hover td {
+  background-color: rgb(167 210 245);
+}
+
+table tr:hover .progressbar {
+  background-color: #fff;
+}
+
+.header-title {
   cursor: move;
-} */
+}
 
 .right-pivot {
   position: absolute;

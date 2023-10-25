@@ -1,0 +1,40 @@
+.stage {
+  display: grid;
+  height: 80px;
+  padding: 15px;
+  cursor: pointer;
+  grid-template-columns: repeat(2, 1fr) 43px;
+}
+
+.stage:hover {
+  background-color: rgb(229 237 243);
+}
+
+.stage-expanded:hover {
+  background-color: transparent;
+}
+
+.stage-burger {
+  display: flex;
+  width: 25px;
+  height: 25px;
+  align-items: center;
+  align-self: center;
+  justify-content: center;
+  border-radius: 20%;
+  color: transparent;
+  font-size: 12px;
+  grid-row-start: span 2;
+}
+
+.stage-expanded .stage-burger {
+  color: rgb(38 89 199);
+}
+
+.stage-burger:hover {
+  background-color: rgb(229 237 243);
+}
+
+.stage:hover .stage-burger {
+  color: rgb(38 89 199);
+}
